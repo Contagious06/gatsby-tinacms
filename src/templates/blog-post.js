@@ -5,7 +5,9 @@ import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 import { rhythm, scale } from "../utils/typography"
-import { remarkForm } from "gatsby-tinacms-remark"
+import { liveRemarkForm } from "gatsby-tinacms-remark"
+import { Wysiwyg } from "@tinacms/fields"
+import { TinaField } from "@tinacms/form-builder"
 
 class BlogPostTemplate extends React.Component {
   render() {
@@ -39,7 +41,31 @@ class BlogPostTemplate extends React.Component {
               {post.frontmatter.date}
             </p>
           </header>
-          <section dangerouslySetInnerHTML={{ __html: post.html }} />
+
+          <TinaField name="rawMarkdownBody" Component={Wysiwyg}>
+            <section
+              class="content"
+              dangerouslySetInnerHTML={{ __html: post.html }}
+            ></section>
+          </TinaField>
+          <button style={{
+            position: "fixed",
+            right: "20px",
+            bottom: "20px",
+            backgroundColor: "#0084ff",
+            color: "#fff",
+            borderRadius: "1.5rem",
+            padding: "0.3rem 1rem",
+            boxShadow: "0px 1px 3px rgba(0,0,0,0.1), 0px 2px 6px rgba(0,0,0,0.2)",
+            minWidth: "100px",
+            border: 0,
+            cursor: "pointer",
+            userSelect: "none",
+            outline: "none",
+          }} onClick={() => this.props.setIsEditing(p => !p)}>
+            {this.props.isEditing ? "Preview" : "Edit"}
+          </button>
+
           <hr
             style={{
               marginBottom: rhythm(1),
@@ -121,10 +147,10 @@ const BlogPostForm = {
 }
 
 /**
- * The `remarkForm` higher order component wraps the `BlogPostTemplate`
+ * The `liveRemarkForm` higher order component wraps the `BlogPostTemplate`
  * and generates a new form from the data in the `markdownRemark` query.
  */
-export default remarkForm(BlogPostTemplate, BlogPostForm)
+export default liveRemarkForm(BlogPostTemplate, BlogPostForm)
 
 export const pageQuery = graphql`
   query BlogPostBySlug($slug: String!) {
